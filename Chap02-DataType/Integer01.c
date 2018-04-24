@@ -3,7 +3,7 @@
 int main(void)
 {
     char ch = 'A';
-    wchar_t wch = L'A';
+    // wchar_t wch = L'A';  // gcc에서는 안됨
     short sData = 10;
     int nData = 10;
     long lData = 10L;
