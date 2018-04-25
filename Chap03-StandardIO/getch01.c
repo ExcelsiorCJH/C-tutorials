@@ -2,7 +2,8 @@
 // _getch() 함수를 사용하기 위한 헤더 파일 포함
 #include <conio.h>
 
-int main(void){
+int main(void)
+{
     char ch = 0;
     // 사용자에게 전달할 메시지(문자열) 출력
     printf("아무 키나 누르면 다음으로 넘어갑니다. \n");
