@@ -103,5 +103,54 @@ int main(void){
 - 반환값 : 정상적이면 음수가 아닌 값을 반환
 
 
+`gets()/puts()` 함수는 문자열을 입/출력 해주는 함수이며, 매개변수가 포인터다. 따라서, `gets(), puts()` 함수를 호출하려면 메모리의 주소를 적어야 한다.
 
-`gets()/puts()` 함수는 
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    // char 변수 32개가 한 덩어리로 묶인 배열 선언 및 정의
+    char szName[32] = { 0 };
+    
+    // 사용자로 부터 이름(문자열)을 입력받는다.
+    printf("이름을 입력하세요: ");
+    // 사용자가 입력한 문자들을 문자 배열에 모두 저장한다.
+    gets(szName);  // gets()는 보안 결함 문제가 있음
+
+    // 배열에 저장된 이름을 화면에 출력한다.
+    printf("당신의 이름은 ");
+    puts(szName);
+    puts("입니다.");
+    return 0;
+}
+```
+
+
+
+`gets()` 함수가 호출되면 키보드 입력 버퍼(buffer, 메모리)의 내용을 확인하고, 버퍼가 비어있으면 문자열을 입력받아 버퍼에 저장한다.
+
+`puts()` 함수는 매개변수로 전달된 메모리의 주소에 저장된 문자정보를 읽어 화면에 출력한다.  
+
+`gets()`함수는 보안 결함 문제가 있다.  따라서, `gets()` 는 사용하지 않는 것이 좋으며, `gets_s()/fgets()` 함수를 사용한다. 
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    char szName[32] = {0};
+
+    printf("이름을 입력하세요 : ");
+    
+    // Windows: gets_s(szName, sizeof(szName));
+    // Linux, UNIX : fgets(szName, sizeof(szName), stdin);
+    fgets(szName, sizeof(szName), stdin);
+
+    printf("당신의 이름은 ");
+    puts(szName);
+    puts("입니다.");
+    return 0;
+}
+```
+
