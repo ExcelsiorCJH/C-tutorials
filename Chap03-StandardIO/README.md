@@ -194,7 +194,7 @@ int main(void)
 
 #### 이스케이프 시퀀스
 
-가장 많이 사용되는 이스케이프 시퀀스는 `\n, \t, \\, \"` 이다.
+가장 많이 사용되는 이스케이프 시퀀스는 `\n, \t, \\, \"` 이다. 빈칸(공백문자), Tab(`\t`), 개행문자(`\n`) 등을 **화이트 스페이스(white space)** 라고 하며, `char` 형 **문자** 이다. 예를들어 `"Hello"`는 문자열 길이가 5이지만 `"Hello\n"`은 길이가 6이다.
 
 | 문자 | 의미                  |  문자  | 의미        |
 | :--: | --------------------- | :----: | ----------- |
@@ -269,3 +269,105 @@ int main(void)
 
 
 `scanf()` 함수도 `gets()` 함수와 마찬가지로 보안 문제가 있어, `scanf()` 대신 `scanf_s()`를 사용하는 것이 좋다. 하지만, `scanf_s()`는 Windows 운영체제에서만 사용할 수 있는 함수며, `gcc`에서는 지원하지 않는다.
+
+
+
+### 3.4.2 두 정수의 입력 및 구분
+
+`scanf()`도 `printf()`함수 처럼 형식 문자열 안에 여러 형식 문자를 사용할 수 있다. 
+
+```c
+// scanfsepint01.c
+#include <stdio.h>
+
+int main(void)
+{
+    int x = 0, y = 0;
+
+    printf("두 정수를 입력하세요 : ");
+    // 사용자로부터 두 정수를 입력받아 x와 y에 순서대로 저장한다.
+    // %d와 %d 사이에 공백이 없다는 점에 주의한다.
+    scanf("%d%d", &x, &y);
+
+    // x와 y의 합을 출력한다.
+    printf("두 수의 합은 %d 입니다. \n", x+y);
+
+    char ch = 0;
+    printf("정수와 문자를 입력해 주세요 : ");
+    scanf("%d%c", &x, &ch);
+    printf("입력한 수는 %d이고, 문자는 %c 입니다. \n", x, ch);
+    
+    return 0;
+}
+```
+
+
+
+### 3.4.3 문자열 입/출력
+
+형식 문자 `%s`를 이용하면 `scanf()` 함수도 `gets()` 함수 처럼 문자열을 입력받을 수 있다. 
+
+```c
+// scanfstring01.c
+#include <stdio.h>
+
+int main(void)
+{
+    // 문자열을 저장하기 위한 배열 선언 및 정의
+    char szBuffer[32] = {0};
+
+    // 사용자가 입력한 문자열을 배열에 저장하고 출력
+    scanf("%s", szBuffer);
+    printf("%s\n", szBuffer);
+    return 0;
+}
+```
+
+위의 소스코드를 실행하고 `Test string`을 입력하면 출력결과는 `Test` 만 출력된다. 그 이유는 빈칸(공백문자)은 입력의 구분자로 사용되어 `"Test"`만 `szBuffer`에 저장하고 `"string"`은 버퍼에 남겨지기 때문이다. 
+
+따라서, 두 문자열을 입력 받기 위해서는 `%s%s`를 사용해야한다. 
+
+
+
+```c
+// scanfstring02.c
+#include <stdio.h>
+
+int main(void)
+{
+    char szBufferLeft[32] = {0};
+    char szBufferRight[32] = {0};
+
+    scanf("%s%s", szBufferLeft, szBufferRight);
+    printf("%s %s \n", szBufferLeft, szBufferRight);
+    return 0;
+}
+```
+
+하지만 위의 방법 보다는 일반적으로 공백문자를 포함한 문자열 입력은 `gets()`(보안 문제로 `gets_s()/fgets()`)함수를 이용한다.   
+
+아래의 예제 코드에서 `scanf()`를 호출한 뒤 `fgets()`를 호출하면 `fgets()`가 실행되지 않고 지나간다. 이를 해결해주기 위해 `fflus(stdin);`(Linux나 Unix에서는 `fpurge(stdin);`)을 써준다.  
+
+```c
+// scanfage02.c
+#include <stdio.h>
+
+int main(void)
+{
+    int age;
+    char name[10] = {0};
+
+    printf("나이를 입력하세요. : ");
+    scanf("%d", &age);
+
+    printf("이름을 입력하세요. : ");
+    // fgets() 입력이 그냥 넘어가는 오류 해결
+    fflush(stdin);  // Windows
+    // fpurge(stdin);  // Linux, Unix
+    fgets(name, sizeof(name), stdin);
+
+    printf("당신의 나이는 %d살이고, 이름은 %s입니다.\n", age, name);
+
+    return 0;
+}
+```
