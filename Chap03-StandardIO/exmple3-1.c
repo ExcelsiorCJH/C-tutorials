@@ -10,10 +10,10 @@ int main(void)
     char name[10] = {0};
 
     printf("나이를 입력하세요. : ");
-    scanf("%d", &age);
+    scanf("%d%*c", &age);  // %*c는 문자 하나를 입력 버퍼에서 읽어온 후 나머지는 버림
 
     printf("이름을 입력하세요. : ");
-    fflush(stdin);  // fgets() 입력이 그냥 넘어가는 오류 해결
+    // fflush(stdin);  // fgets() 입력이 그냥 넘어가는 오류 해결
     fgets(name, sizeof(name), stdin);
 
     printf("당신의 나이는 %d살이고, 이름은 %s입니다.", age, name);
