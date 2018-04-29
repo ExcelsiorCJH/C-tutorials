@@ -140,6 +140,7 @@ int main(void){
 
 
 
+
 ### 4.1.4 나머지 연산자
 
 나머지 연산자는 나눗셈과 원리가 같으나, 몫이 아닌 나머지를 구한다. 나머지 연산자 기호는 `%`이다. 나머지 연산자의 피연산자로 **실수가 사용될 수 없다.**
@@ -165,3 +166,250 @@ int main(void){
 
 
 
+
+
+## 4.2 대입 연산자
+
+대입 연산자는 `=` 기호로 표시되는 연산자로, 오른쪽(우변) 피연산자에서 읽어서 왼쪽(좌변) 피연산자로 정보를 복사하는 연산을 수행한다. 쉽게 말해 좌변의 변수에 우변의 값을 대입해 준다고 보면 된다. 과정을 하나하나 살펴보면 다음과 같다.
+
+1. 복사할 원본을 읽기
+2. 복사
+3. 덮어쓰기
+
+
+
+### 4.2.1 단순 대입 연산자
+
+가장 기본적인 대입 연산자이다.
+
+```c
+// opassign01.c
+#include <stdio.h>
+
+int main(void){
+    int x = 0, nInput = 0;
+    scanf("%d", &nInput);
+
+    // nInput 변수에 저장된 사용자가 입력한 값을 x에 복사한다.
+    // x에 들어있던 값은 Overwrite되고 사라진다.
+    x = nInput;
+    printf("%d\n", x);
+    
+    return 0;
+}
+```
+
+
+
+#### 두 변수값 교환
+
+```c
+// opswap1.c
+
+#include <stdio.h>
+
+int main(void){
+    // nTmp는 '교환'을 위해 필요한 변수이다.
+    int x = 10, y = 20, nTmp = 0;
+    printf("Before: %d, %d\n", x, y);
+
+    // 두 변수 x와 y에 저장된 값을 서로 교환한다.
+    nTmp = x; 
+    x = y;
+    y = nTmp;
+
+    // 교환이 완료된 것을 확인하기 위해 출력한다.
+    printf("After: %d, %d\n", x, y);
+    return 0;
+}
+```
+
+
+
+### 4.2.2 복합 대입 연산자
+
+복합 대입 연산자는 기존의 단순 대입 연산자에 산술 연산자나 비트 연산자를 조합하여 새로운 연산자로 만드는 것이다. 즉, 두 개의 연산을 하나로 합친 연산이라 볼 수 있다.
+
+```c
+// opcomassign01.c
+#include <stdio.h>
+
+int main(void){
+    int nResult = 0, nData = 10;
+
+    nResult += 3;  // nResult = nResult + 3;
+    printf("%d\n", nResult);
+
+    nResult *= nData;  // nResult = nResult * nData;
+    printf("%d\n", nResult);
+
+    nResult /= 2;  // nResult = nResult / 2;
+    printf("%d\n", nResult);
+
+    nResult -= nData - 5;  // nResult = nReuslt - (nData - 5);
+    printf("%d\n", nResult);
+
+    nResult %= 3;  // nResult = nResult % 3;
+    printf("%d\n", nResult);
+    return 0;
+}
+
+/*
+출력결과
+	3
+    30
+    15
+    10
+    1
+*/
+```
+
+
+
+#### 누적 연산 구현
+
+복합 대입 연산자 중 `+=`연산자는 누적을 구현하는 데 자주 사용된다.
+
+```c
+// accumulate01.c
+/*
+사용자로부터 세 정수를 입력받아 총합을 출력
+*/
+#include <stdio.h>
+
+int main(void){
+    int nInput, nTotal = 0;
+
+    scanf("%d", &nInput);
+    nTotal += nInput;
+
+    scanf("%d", &nInput);
+    nTotal += nInput;
+
+    scanf("%d", &nInput);
+    nTotal += nInput;
+
+    printf("Total = %d", nTotal);
+    
+    return 0;
+}
+```
+
+
+
+
+
+## 4.3 형변환 연산자
+
+형변환(type cast) 연산자 피연산자의 자료형을 새로운 자료형으로 변경하는 단항 연산자다. 위에서 알아본 연산자들 보다 **우선순위가 높기** 때문에, 산술 연산자와 형변환 연산자가 같이 나올 경우 형변환이 우선이다. 
+
+```c
+// opcast01.c
+
+#include <stdio.h>
+
+int main(void){
+    int x = 5;
+
+    printf("%d\n", 5/2);  // int / int -> int
+    printf("%f\n", 5.0 / 2);  // double / int -> double
+    printf("%f\n", 5 / 2.0);  // int / double -> double
+    printf("%f\n", (double)5 / 2);  // double / int -> double
+    printf("%f\n", (double)x / 2);  // double / int -> double
+    printf("%f\n", x / (double)2);  // int / double -> double
+    printf("%f\n", (double)(x / 2));  // double
+
+    return 0;
+}
+/*
+출력결과
+    2
+    2.500000
+    2.500000
+    2.500000
+    2.500000
+    2.500000
+    2.000000
+*/
+```
+
+
+
+
+
+## 4.4 단항 증감 연산자
+
+단항 증감 연산자는 `++` 와 `--` 로 표시되는 연산자다.  이 연산자의 의미는 피연산자의 값을 1씩 증가(감소) 시킨다.
+
+```c
+// opinc01.c
+#include <stdio.h>
+
+int main(void){
+    int x = 10;
+
+    // 1. x에 저장된 값과 1을 더해 다시 x에 저장한다.
+    x = x + 1;
+    printf("%d\n", x);
+
+    // 2. x에 저장되어 있는 값을 1을 누적한다.
+    x += 1;
+    printf("%d\n", x);
+
+    // 3. x에 저장된 값을 1 증가시킨다.
+    ++x;
+    printf("%d\n", x);
+
+    return 0;
+}
+
+/*
+출력결과
+    11
+    12
+    13
+*/
+```
+
+
+
+단한 증감 연산자의 위치에 따라 우선순위가 달라진다. 위의 코드에서 `++x` (전위식 표기)일 경우에는 연산자 우선 순위가 높지만 `x++` (후위식 표기)이면 우선순위가 **최하위**가 된다. 아래의 예제 코드를 보자.
+
+```c
+// opinc02.c
+#include <stdio.h>
+
+int main(void){
+    int x, nResult = 0;
+
+    // x의 값을 1 증가시킨 후 출력한다.
+    ++x;
+    printf("%d\n", x);
+
+    // x의 값을 1 증가 시킨 후 출력한다.
+    x++;
+    printf("%d\n", x);
+
+    // x의 값을 1 증가시킨 후 단순 대입한다(전위식 표기).
+    nResult = ++x;
+    printf("%d, %d\n", nResult, x);
+
+    // x의 값을 nResult에 대입한 후 x를 1 감소시킨다(후위식 표기).
+    nResult = x--;
+    printf("%d, %d\n", nResult, x);
+
+    return 0;
+}
+
+/*
+출력결과
+	1
+    2
+    3, 3
+    3, 2
+*/
+```
+
+
+
+위의 코드 `nResult = x--;` 부분에서 단순 대입 연산과 단항 증가 연산이 같이 나왔다. 이 경우 단항 (증감) 연산을 먼저 수행하는 것이 아니라 **대입 연산을 먼저 수행** 한다. 
