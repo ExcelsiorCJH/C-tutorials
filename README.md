@@ -11,4 +11,7 @@
 
 - [Chap01 - Intro](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap01-Intro)
 - [Chap02 - 자료형](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap02-DataType)
+- [Chap03 - 표준 입출력 도구](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap03-StandardIO)
+- [Chap04 - 연산자(기본)](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap04-Operator)
+
 
