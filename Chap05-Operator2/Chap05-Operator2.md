@@ -222,3 +222,56 @@ int main(void){
 }
 ```
 
+
+
+
+
+## 5.4 조건 연산자(삼항 연산자)
+
+조건 연산자는 다음과 같이 쓴다.
+
+> `조건식 ? A : B`
+
+조건식이 참이면 `A`를 선택하고, 거짓이면 `B`를 선택하므로 `A`와 `B`가 동시에 선택될 수 없다.  `조건식`은 보통 관계 연산식이나 논리 연산식이고, `A`와 `B`는 변수나, 상수다.
+
+```c
+// opcondi01.c
+#include <stdio.h>
+
+int main(void){
+
+    int nInput = 0, nSelect = 0;
+    scanf("%d", &nInput);
+
+    // 조건식이 참이면 nSelect = 10이 되고
+    // 거짓이면 nSelect = 20이 된다.
+    nSelect = nInput <= 10 ? 10 : 20;
+    printf("%d\n", nSelect);
+
+    return 0;
+}
+```
+
+
+
+위의 코드에서는 `조건식 ? A : B`에서 `A`와 `B`가 상수(또는 변수)였다. 만약 연산식을 쓰려고 한다면 **반드시 괄호로 묶어야 한다.**
+
+```c
+// opcondi02.c
+#include <stdio.h>
+
+int main(void){
+
+    int nInput = 0, nSelect = 0;
+    scanf("%d", &nInput);
+
+    // 조건식이 참이면 nSelect = 10이 되고
+    // 거짓이면 nSelect = 20이 된다.
+    // 연산식을 쓰려면 괄호로 묶어야 한다.
+    nSelect = nInput <= 10 ? (nSelect = 10) : (nSelect = 20);
+    printf("%d\n", nSelect);
+
+    return 0;
+}
+```
+
