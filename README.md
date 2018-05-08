@@ -14,5 +14,6 @@
 - [Chap03 - 표준 입출력 도구](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap03-StandardIO)
 - [Chap04 - 연산자(기본)](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap04-Operator)
 - [Chap05 - 연산자(응용)](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap05-Operator2)
+- [Chap06 - 기본 제어문](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap06-ControlStatement)
 
 
