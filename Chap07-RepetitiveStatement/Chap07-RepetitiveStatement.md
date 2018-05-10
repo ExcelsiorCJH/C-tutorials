@@ -73,3 +73,128 @@ int main(void){
 
 ### 7.1.3 반복문 내부에 선언한 자동변수
 
+반복문 내부에 변수를 선언하는 것은 바람직하지 않다. 그 이유는 반복문이 계속 반복(Iteration)될때 마다 변수가 선언되어 초기화 되기 때문이다. 다음 예제 코드를 통해 변수를 반복문 내에서 선언할 경우 어떠한 문제가 발생하는지 보도록 하자. 문자열을 입력받아 인덱스와 함께 화면에 출력하는 예제이다.
+
+```c
+// ctrlwhilevariable.c
+#include <stdio.h>
+
+int main(void){
+    
+    char ch = 0;
+
+    while((ch = getchar()) != '\n'){
+        // nIndex 변수가 생성되고 초기화 된다.
+        int nIndex = 0;
+        printf("%02d\t%c\n", nIndex, ch);
+
+        // 변수의 값을 증가시키지만 논리적으로 소용이 없다.
+        ++nIndex;
+
+        // 여기서 nIndex는 소멸하고 사라지기 때문이다.
+    }
+
+    return 0;
+}
+
+/*출력 결과
+Hello
+00      H
+00      e
+00      l
+00      l
+00      o
+*/
+```
+
+
+
+### 7.1.4 반복문의 중첩
+
+`if`문 내부에 또 다른 `if`문을 중첩할 수 있는 것처럼, `while`문 내부에 또 다른 `while`문을 중첩할 수 있다. 
+
+```c
+while(조건식) {  // 바깥쪽 반복문
+    
+    while (조건식) {  // 안쪽 반복문
+        ......
+    }
+}
+```
+
+ 
+
+다음 예제는 중첩 반복문을 이용해 구구단을 출력하는 코드다.
+
+```c
+// ctrlnestedloop01.c
+#include <stdio.h>
+
+int main(void){
+
+    int i = 0, j = 0;
+
+    i = 2;  // 카운팅 변수(계수) i 초기화
+    while(i <= 9){
+        j = 1;
+        while(j <= 9){  // 계수 j 초기화
+            printf("%d * %d = %d\n", i, j, i*j);
+            ++j;
+        }
+        putchar('\n');
+        ++i;
+    }
+
+    return 0;
+}
+```
+
+
+
+
+
+## 7.2 `for`, 계수(count) 기반 반복문
+
+`for`문과 `while`문은 반복문이라는 점에서 같지만, `while`문은 조건에 기반을 둔 측면이 강하고 **`for`문은 계수(count)에 기반을 둔 측면이 강하다**.
+
+![](./images/for_loop.jpg)
+
+
+
+`for`문에서는 반복횟수에 영향을 주는 **계수(count) 초기화, 조건식, 계수 증감**을 아래의 구조처럼 한 행에 기술하도록 한다. 
+
+```c
+for ( init; condition; increment ) {
+   statement(s);
+}
+```
+
+
+
+다음 예제 코드는 `for`문을 이용하여 5회 반복 수행하는 코드다.
+
+```c
+// ctrlfor01.c
+#include <stdio.h>
+
+int main(void){
+
+    // 계수 초기화; 조건식; 계수 증가
+    for(int i = 0; i < 5; ++i){
+        printf("%dth\n", i);
+        // 제어의 흐름이 반복될 때 ++i를 실행하고 조건을 비교한다.
+    }
+
+    return 0;
+}
+/*출력결과
+0th
+1th
+2th
+3th
+4th
+*/
+```
+
+
+
