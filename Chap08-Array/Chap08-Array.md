@@ -120,5 +120,87 @@ int main(void){
 
 
 
-## 8.2 최대값/최소값
+## 8.2 문자열의 배열
 
+**문자열은 본래 `char` 형 배열이다.** 그리고 **문자열의 끝은 `\0`(NULL 문자)** 이다. 
+
+
+
+### 8.3.1 문자열의 기본 구조
+
+다음 예제는 문자열의 본질이 배열임을 설명하는 코드이다.
+
+```c
+// arraystring01.c
+#include <stdio.h>
+
+int main(void){
+
+    // 배열 각 요소의 값을 하나씩 기술하는 방식으로 초기화
+    int aList[5] = { 30, 40, 10, 50, 20 };
+    char szBuffer[6] = { 'H', 'e', 'l', 'l', 'o', '\0' };
+
+    // 문자열 형태로 문자집합을 기술하는 방식으로 배열 초기화
+    char szData[8] = { "Hello" };
+
+    // 문자열 상수를 가리키는 포인터 변수 선언 및 초기화
+    char *pszBuffer = "Hello";
+
+    // 문자열은 모두 같은 방식으로 출력
+    puts(szBuffer);
+    puts(szData);
+    puts(pszBuffer);
+
+    return 0;
+}
+/* 출력결과
+Hello
+Hello
+Hello
+*/
+```
+
+아래의 그림은 위의 코드에서 문자열 배열의 논리적 메모리 구조를 나타낸 것이다. 
+
+![](./images/string.png)
+
+
+
+원래 `"Hello"`라는 문자열을 풀어서 표시하면, `'H', 'e', 'l', 'l', 'o', '\0'`이다. 문자상수 하나하나를 일일이 표기하려면 매우 번거롭기 때문에 보통은 문자열(`"Hello"`)로 표기한다.
+
+
+
+### 8.3.2 문자열의 끝이 `'\0'`인 이유
+
+[독하게 시작하는 C 프로그래밍]의 저자이신 최호성님의 전적인 사견임을 책에서도 밝혀 놓았듯이 명확한 정답은 있는 듯 하진 않지만, 공부하는 입장인 나로써는 충분히 일리가 있는 설명인듯하다.
+
+다음 예제는 사용자로부터 영문이름을 입력받아 문자열의 길이를 출력하는 코드이다.
+
+```c
+// arraystring02.c
+#include <stdio.h>
+
+int main(void){
+
+    char szBuffer[32] = { 0 };
+    int nLength = 0;
+
+    // 이름을 입력받아 배열에 저장한다.
+    printf("Input your name : ");
+    gets(szBuffer);
+
+    // 배열의 시작부터 '\0'가 나올 때까지 계속 다음으로 넘기고 확인한다.
+    while(szBuffer[nLength] != '\0')
+        nLength++;
+
+    // 이름과 문자열의 길이를 출력한다.
+    printf("Your name is %s(%d).\n", szBuffer, nLength);
+    return 0;
+}
+/*출력결과
+Input your name : cjh
+Your name is cjh(3).
+*/
+```
+
+위의 코드에서 만약에 문자열 안에 `'\0'` 이 들어있지 않다면 무한루프가 발생할 수 있다. 하지만, 문자열의 끝에는 항상(?) `'\0'`이 들어 있으므로 위의 코드는 에러없이 동작한다. 
