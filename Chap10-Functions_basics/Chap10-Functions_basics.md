@@ -141,7 +141,7 @@ MAX: 3
 
 인터페이스가 아예 없는 프로그램이 아니라면 모든 프로그램은 **UI와 기능**으로 나눌 수 있다. 이 둘은 적어도 함수단위로 구별되어야 한다. 
 
-아래의 예제는 계승(factorial)을 계산하는 함수를 구현한 코드이다. 피호출자 함수 `GetFactorial()` 는 `int` 형 매개변수를 통해 계승을 구할 숫자를 받는다. 그리고 화면에 출력할 부분은 `main()` 함수에 정의한다. 
+아래의 예제는 계승(factorial)을 계산하는 함수를 구현한 코드이다. 피호출자 함수 `GetFactorial()` 는 `int` 형 매개변수를 통해 계승을 구할 숫자를 받는다. 그리고 화면에 출력할 부분은 `main()` 함수에 정의한다. 이렇게 출력하는 부분인 **UI**와 계승을 구하는 **기능** 을 **명확하게 분리**할 수 있다.
 
 ```c
 // funcdesign02.c
@@ -186,3 +186,190 @@ ERROR: 1~10사이의 정수를 입력하세요.
 
 
 
+이번에 살펴볼 예제는 **UI 부분에서도 성적을 입력받는 부분과 학점을 출력하는 부분이 분리** 하여 구현되어 있다.
+
+```c
+// funcdesign03.c
+
+#include <stdio.h>
+
+// 계산된 학점을 입력받는 인터페이스
+int GetResult(void){
+
+    int nResult = 0;
+    printf("성적(0~100)을 입력하세요. : ");
+    scanf("%d", &nResult);
+    return nResult;
+}
+
+// 학점을 계산하는 기능
+char GetGrade(int nScore){
+    if(nScore >= 90) return 'A';
+    else if(nScore >= 80) return 'B';
+    else if(nScore >= 70) return 'C';
+    else if(nScore >= 60) return 'D';
+    return 'F';
+}
+
+// 프로그램의 전체적 흐름
+int main(void){
+    int nResult = 0;
+
+    nResult = GetResult();
+    printf("당신의 학점은 '%c'(%d)입니다.\n", GetGrade(nResult), nResult);
+    return 0;
+}
+
+/* 출력결과
+성적(0~100)을 입력하세요. : 95
+당신의 학점은 'A'(95)입니다.
+*/
+```
+
+
+
+이번에 살펴볼 예제는 실제로는 동작하는 **기능**은 없고, **UI**만 있는 '관리프로그램'의 예제코드이다. 사용자에게 프로그램의 메뉴를 출력해준 뒤 사용자로부터 입력받은 메뉴를 처리하는 기능을 간단하게 구현한 예제이다. 현재 내가 작성한 코드는 Mac(또는 Linux)환경에서 gcc를 이용해 compile하기 때문에 Windows환경의 코드와는 조금 다르다. 아래의 코드를 보면 `PrintMenu()` 함수를 `main()` 함수에서 반복해서 호출하고 반환받은 사용자의 선택을 `switch-case` 문으로 메뉴에 대한 적절한 문자열을 출력한다. 이러한 반복 구조를 **이벤트 루프(event loop)**라고 한다.
+
+```c
+// Printmenu01.c
+
+#include <stdio.h>
+// #include <curses.h>  // gcc (Linux)
+// #include <conio.h>  // Windows
+#include <stdlib.h>
+#include <unistd.h>  // sleep()을 사용하기 위함
+
+// 화면에 메뉴를 출력하는 함수의 선언 및 정의
+int PrintMenu(void){
+    int nInput = 0;
+
+    // 메뉴를 출력하기 전에 화면을 지운다. (Clear screen)
+    // system("cls");  // Windows
+    sleep(1);  // Linux & Mac에서는 화면이 바로 지워지는 문제로 인해 sleep() 추가
+    system("clear");
+    // 메뉴를 출력하고 사용자 입력을 받는다.
+    printf("[1]New\t[2]Search\t[3]Print\t[4]Remove\t[0]Exit\n");
+    scanf("%d", &nInput);
+
+    // 사용자가 선택한 메뉴 값을 반환한다.
+    return nInput;
+}
+
+int main(void){
+    int nMenu = 0;
+
+    // 메뉴 이벤트 루프
+    // 사용자가 입력한 값에 따라 정해진 기능을 반복해 수행한다.
+    // 0을 입력하면 반복문을 끝낸다.
+    while((nMenu = PrintMenu()) != 0){
+        switch(nMenu){
+            case 1:  // New
+                puts("새 항목을 추가합니다.");
+                break;
+
+            case 2:  // Search
+                puts("기존 항목에서 검색합니다.");
+                break;
+
+            case 3:  // Print
+                puts("전체 내용을 출력합니다.");
+                break;
+
+            case 4:  // Remove
+                puts("기존 항목을 삭제합니다.");
+
+            default:
+                puts("알 수 없는 명령입니다.");
+        }
+        getchar();
+    }
+    puts("Bye~!");
+    return 0;
+}
+
+/* 출력결과
+[1]New	[2]Search	[3]Print	[4]Remove	[0]Exit
+2
+기존 항목에서 검색합니다.
+
+[1]New	[2]Search	[3]Print	[4]Remove	[0]Exit
+0
+Bye~!
+*/
+```
+
+
+
+
+
+### 10.2.2 재사용 가능한 단위 기능의 구현
+
+불연속적으로 반복되거나 앞으로 다시 사용될 가능성이 높은 코드는 함수로 만드는 것이 좋다. 그 이유는 나중에 유지보수 하기 좋기 때문이다. 하지만 반복이나 재사용 같은 이유가 아니라도 함수로 만드는 것이 좋을 때가 있다. 
+
+예를 들어, 프로그램이 제공하는 여러 기능 각각을 하나의 함수로 만들면 코드를 관리하기 좋을 뿐만아니라 구조 또한 깔끔한 프로그램이 될 수 있다.  다음 예제 코드는 위의 `PrintMenu01.c` 의 '관리 프로그램'에 특정 기능을 구현한 함수를 추가하고 확장한 코드이다.
+
+```c
+// Printmenu02.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>  // sleep()을 사용하기 위함
+
+
+// 나이를 매개변수로 받고 요금을 반환하는 기능을 제공
+int GetFee(int nAge){
+    int nFee = 1000;
+    if(nAge < 20) nFee /= 2;
+    return nFee;
+}
+
+// 메뉴를 출력하고 사용자로부터 선택을 입력받는 인터페이스
+int PrintMenu(void){
+    int nInput = 0;
+
+    sleep(1);  // Linux & Mac에서는 화면이 바로 지워지는 문제로 인해 sleep() 추가
+    system("clear");
+    printf("[1]New\t[2]Search\t[3]Print\t[4]Remove\t[0]Exit\n");
+    scanf("%d", &nInput);
+    return nInput;
+}
+
+// 사용자로부터 나이를 입력받는 인터페이스
+int GetAge(void){
+    int nAge = 0;
+    printf("나이를 입력하세요. : ");
+    scanf("%d", &nAge);
+    return nAge;
+}
+
+// 프로그램의 전체 흐름
+int main(void){
+    int nMenu = 0, nAge = 0;
+
+    // 간단히 구현한 이벤트 루프    
+    while((nMenu = PrintMenu()) != 0){
+        if(nMenu == 1){
+            nAge = GetAge();
+            printf("요금은 %d원 입니다.\n", GetFee(nAge));
+            getchar();
+        }
+    }
+    puts("Bye~!");
+    return 0;
+}
+
+/* 출력결과
+[1]New	[2]Search	[3]Print	[4]Remove	[0]Exit
+1
+나이를 입력하세요. : 19
+요금은 500원 입니다.
+
+[1]New	[2]Search	[3]Print	[4]Remove	[0]Exit
+0
+Bye~!
+*/
+```
+
+
+
+함수설계 원칙보다 더 큰 범위의 설계 원칙으로 **DRY(Don't Repeat Yourself)** 원칙이 있다(실용주의 프로그래머, Andrew Hunt & David Thomas 저). DRY 원칙의 핵심은 **"같은 일을 수행하는 코드가 중복(여러 곳에 존재)되지 않도록 하라"** 이다. 
