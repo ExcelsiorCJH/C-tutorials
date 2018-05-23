@@ -17,3 +17,5 @@
 - [Chap06 - 기본 제어문](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap06-ControlStatement)
 - [Chap07 - 반복문](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap07-RepetitiveStatement)
 - [Chap08 - 배열](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap08-Array)
+- [Chap09 - 배열을 활용한 프로그래밍 기법](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap09-Programmig_Using_Array)
+- [Chap10 - 함수에 대한 기본 이론](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap10-Functions_basics)
