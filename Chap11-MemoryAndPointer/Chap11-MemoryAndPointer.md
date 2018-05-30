@@ -163,3 +163,82 @@ x의 주소(&x) : 0019FEF8
 
 ### 11.1.3 포인터와 배열
 
+배열의 이름은 0번 요소의 주소이며, 전체 배열을 대표하는 식별자이다. 포인터 변수는 주소를 저장하기 위한 변수이므로 **"배열의 이름이 주소이므로, 포인터 변수에 저장할 수 있다."** 라는 추론이 가능하다. 즉, `int`형 포인터에 `int`형 변수의 주소만 담을 수 있는 것이 아니라, `int`형 배열의 이름도 담을 수 있다.
+
+![](./images/array.png)
+
+
+
+```c
+// ptrnarray01.c
+
+#include <stdio.h>
+
+int main(void){
+    // int 배열 선언 및 정의. 배열의 이름은 연속된 각 요소들 중
+    // 전체를 대표하는 0번째 요소에 대한 '주소 상수'이다.
+    int aList[5] = { 0 };
+    // int에 대한 포인터 변수를 배열의 이름으로 정의한다.
+    int *pnData = aList;  // => int *pnData = &aList[0];
+
+    // 배열의 0번 요소의 값을 출력한다.
+    printf("aList[0] : %d\n", aList[0]);
+
+    // 포인터가 가리키고 있는 배열의 0번 요소의 값을 변경하고 출력한다.
+    *pnData = 20;
+    printf("aList[0] : %d\n", aList[0]);
+    printf("pnData[0] : %d\n", pnData[0]);
+
+    return 0;
+}
+
+/* 출력결과
+aList[0] : 0
+aList[0] : 20
+pnData[0] : 20
+*/
+```
+
+
+
+위의 코드에서 `int *pnData = aList` 부분은 `int`형 배열의 이름을 "`int`에 대한 포인터의 초기값"으로 정의했다. 이 부분을 `int *pnData = &aList[0]`라고도 할 수 있다. 또한 `int *pnData = &aList[1](또는 &aList[2])` 처럼 지정하여 배열의 특정 index의 주소로 정의할 수도 있다. `*pnData=20;`에서 `*pnData`는 간접지정 연산자이며 "`pnData`포인터에 저장된 수소의 메모리를 `int`형 변수로 지정"한 것이다.
+
+마지막으로,  `printf("pnData[0] : %d\n", pnData[0]);` 에서의 결과값은 `aList[0]`의 값과 같다. 그 이유는 `*pnData = aList`에서 **포인터 변수 `pnData`에 저장된 주소를 기준으로 오른쪽으로 `int` 0 개 떨어진 위치(주소)의 메모리를 `int`형 변수로 지정한다**는 의미이기 때문이다. 따라서 `*pnData = 20`를 **`*(pnData + 0) = 20`** 로 쓸 수 있으며, 이 것은 또한 **`pnData[0]`** 과 같다.
+
+다음 예제는 배열에 저장된 문자열의 길이를 측정하는 프로그램을 포인터 변수에 저장된 주소값을 증가시키는 방법으로 구현한 것이다.
+
+```c
+// ptrstring01.c
+#include <stdio.h>
+// strlen() 함수를 사용하기 위한 헤더 포함
+#include <string.h>
+
+int main(void){
+
+    // 문자 배열(char[16])의 선언 및 정의
+    // 선언한 크기는 char[16]이지만 초기화는 char[6] 문자열로 한다.
+    char szBuffer[16] = { "Hello" };
+    // 문자 배열을 가리키는 문자 포인터 변수의 선언 및 정의
+    char *pszData = szBuffer;
+    int nLength = 0;
+
+    // pszData 포인터 변수가 가리키는 대상에 저장된 char형 데이터가
+    // 문자열의 끝을 의미하는 NULL 문자가 될 때까지 반복문 수행
+    while(*pszData != '\0'){
+        pszData++;
+        nLength++;
+    }
+
+    // strlen() 함수로 문자열의 길이(바이트 단위 크기)를 출력한다.
+    printf("Length : %d\n", nLength);
+    printf("Length : %d\n", strlen(szBuffer));
+    printf("Length : %d\n", strlen("World"));
+
+    return 0;
+}
+/* 출력결과
+Length : 5
+Length : 5
+Length : 5
+*/
+```
