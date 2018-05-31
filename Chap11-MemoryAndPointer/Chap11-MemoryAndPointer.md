@@ -242,3 +242,149 @@ Length : 5
 Length : 5
 */
 ```
+
+
+
+
+
+## 11.2 메모리 동적 할당 및 관리
+
+지금까지 예제코드에서 봐온 변수들은 메모리를 할당하고 해제하는 과정을 컴파일러가 자동으로 관리해주기 때문에 메모리 관리에 신경을 쓰지 않아도 됐었다. 그래서 이러한 변수들을 자동변수라고 불렀다.
+
+그렇다면, 이제 메모리 동적 할당 및 관리에 대해 알아보자. `malloc()`과 `free()`함수는 메모리를 동적으로 할당 및 해제하는 함수다.
+
+`malloc()` 함수를 이용하면 자동변수로 사용할 수 있는 메모리와는 비교할 수도 없을 만큼 큰 메모리를 자유롭게 '동적(dynamic)'으로 다룰 수 있다. 즉, 프로그램 실행 중에 대량의 메모리가 필요한 경우 바로 할당이 가능하다. 대신 이러한 할당에는 **반환(또는 해제)**을 해주어야 한다.
+
+
+
+- **`void *malloc(size_t size);`**
+  - **Description** : 할당받은 메모리는 반드시 `free()`함수를 이용해 반환해야하며, 메모리를 초기화하려면 `memset()`함수를 이용해야한다. 기본적으로는 쓰레기값이 들어있다.
+  - **Parameters** : size - 할당받을 메모리의 바이트 단위 크기
+  - **Return** : 힙(heap) 영역에 할당된 메모리 덩어리 중 첫 번째 바이트 메모리의 주소, 에러 발생 시 NULL 반환
+
+
+
+- **`void free(void *memblock)`**
+
+  - **Description** : 동적으로 할당받은 메모리를 운영체제에 반환하는 함수
+
+  - **Parameters** : memblock - 반환할 메모리의 주소
+
+  - **Return** : 없음
+
+
+
+**`malloc()` 함수는 인수로 전달받은 정수만큼의 바이트 단위 메모리를 동적으로 할당하고 주소를 반환**한다. 이 주소는 할당받은 메모리 전체에 대한 **기준주소**이다. 메모리의 사용이 끝난 다음에는 반드시 **`free()`함수를 이용해 메모리를 운영체제에 반환**해야 한다. 
+
+다음 예제는 `malloc(), free()` 함수를 이용해 포인터 변수인 `pList`에 메모리를 동적할당한 후 반환하는 코드다.
+
+```c
+// ptrmalloc01.c
+#include <stdio.h>
+// malloc() 함수를 사용하기 위한 헤더 포함
+#include <stdlib.h>
+
+int main(void){
+
+    int *pList = NULL, i = 0;
+
+    // 12바이트(sizeof(int) * 3) 메모리를 동적 할당하고 시작주소를
+    // pList 포인터 변수에 저장
+    pList = (int*)malloc(sizeof(int)*3);
+
+    // 동적 할당한 대상 메모리를 배열 연산자로 접근한다.
+    pList[0] = 10;  // *(pList + 0) = 10;
+    pList[1] = 20;
+    pList[2] = 30;
+
+    for(i=0; i<3; ++i)
+        printf("%d\n", pList[i]);
+    
+    // 동적 할당한 메모리를 해제한다.
+    free(pList);
+    return 0;
+}
+/*
+출력결과
+10
+20
+30
+*/
+```
+
+
+
+위의 코드를 디버깅모드를 통해 메모리를 조사해보면 아래의 그림처럼 확인할 수 있다.
+
+![](./images/malloc.png)
+
+만약에 위의 코드에서 `free(pList);`를 주석으로 처리한 후 실행하면 에러는 발생하지 않지만, 할당 받은 메모리를 반환하지 않아, **메모리 누수(memory leak)**가 발생하게 된다. 
+
+
+
+### 11.2.1 메모리 초기화 및 사용(배열)
+
+할당된 메모리는 일단 `0`으로 초기화하는 것이 바람직하다. 그 이유는 메모리를 할당할때 운영체제에서 할당할 메모리를 빌려오는 것이기 때문에 할당될 메모리안에 어떠한 값이 들어 있는지 모르기 때문이다. `memset()`과 `calloc()` 함수를 이용해 할당받은 메모리를 초기화할 수 있다.
+
+- **`void *memset(void *dest, int c, size_t count)`**
+  - **Description** : 동적으로 할당받은 메모리에는 쓰레기 값이 있으므로 일반적으로 0으로 초기화하여 사용
+  - **Parameters** : 
+    - dest - 초기화할 대상 메모리 주소
+    - c - 초기값, 이 값이 0이면 메모리를 0으로 초기화
+    - count - 초기화 대상 메모리의 바이트 단위 크기
+  - **Return** : 대상 메모리 주소
+
+
+
+- **`void *calloc(size_t num, size_t size)`**
+  - **Description** : `malloc()`함수와 달리 할당받은 메모리를 0으로 초기화하여 전달한다. 할당받은 메모리는 반드시 `free()` 함수를 이용하여 반환해야한다.
+  - **Parameters** :
+    - num - 요소의 개수
+    - size - 각 요소의 바이트 단위 크기
+  - **Return** : 힙(heap) 영역에 할당된 메모리 덩어리 중 첫 번째 바이트 메모리의 주소. 할당된 메모리의 크기는 `num * size`의 값이다. 에러가 발생하면 NULL 반환
+
+
+
+```c
+// ptrmeminit01.c
+#include <stdio.h>
+// malloc(), calloc() 함수를 위한 헤더 포함
+#include <stdlib.h>
+// memset() 함수를 위한 헤더 포함
+#include <string.h>
+
+int main(void){
+    int *pList = NULL, *pNewList = NULL;
+
+    // A. int형 3개 배열 선언 및 정의(0 초기화)
+    int aList[3] = { 0 };
+
+    // B. int형 3개를 담을 수 있는 크기의 메모리를 동적으로 할당한 후
+    // 메모리를 모두 0으로 초기화
+    pList = (int*)malloc(sizeof(int) * 3);
+    memset(pList, 0, sizeof(int) * 3);
+
+    // C. int형 3개를 담을 수 있는 메모리를 0으로 초기화한 후 할당받음
+    pNewList = (int*)calloc(3, sizeof(int));
+
+    for(int i=0; i<3; ++i)
+        printf("pList[%d]의 값 : %d\n", i, pList[i]);
+
+    for (int i = 0; i < 3; ++i)
+        printf("pNewList[%d]의 값 : %d\n", i, pNewList[i]);
+
+    // 동적 할당한 메모리들을 해제
+    free(pList);
+    free(pNewList);
+    return 0;
+}
+/* 출력결과
+pList[0]의 값 : 0
+pList[1]의 값 : 0
+pList[2]의 값 : 0
+pNewList[0]의 값 : 0
+pNewList[1]의 값 : 0
+pNewList[2]의 값 : 0
+*/
+```
+
