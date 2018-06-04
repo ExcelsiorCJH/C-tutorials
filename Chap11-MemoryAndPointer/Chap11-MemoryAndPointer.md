@@ -388,3 +388,59 @@ pNewList[2]의 값 : 0
 */
 ```
 
+
+
+위의 코드를 디버깅모드를 통해 메모리를 조사해보면 아래의 그림처럼 확인할 수 있다.
+
+![](./images/pointer06.png)
+
+
+
+### 11.2.2 메모리 복사
+
+예를 들어 `int num = 10;` 처럼 단순 대입연산자는 오른쪽 `r-value`값인 `10`을 왼쪽 피연산자인 `num` 즉, `l-value`에 복사한다. 이 과정에서 `num`의 기존 정보는 유실되고 새로운 정보로 덮어 씌어진다. 이러한 단순 대입 연산에서 피연산자가 변수(`l-value`)일 경우, 그 개수가 1개라고 전제하여 그 1개에 대해 대입이 이루어진다. 
+
+반면, **배열처럼** 여러 인스턴스가  있는 경우에는 단순 대입으로 `r-value`를 `l-value`로 복사할 수가 없다. 따라서, 배열에 대입 연산을 수행하려면 각 요소의 개수만큼 `for`문이나 `while`문을 통해 요소별로 일일이 대입 연산을 수행해야한다. 하지만, `memcpy()`함수를 사용하여 이러한 귀찮은 작업을 대신할 수 있다.
+
+- **`void *memcpy(void *dest, const void *src, size_t count)`**
+  - **Description** : 특정 주소로 시작하는 일정 길이의 메모리에 저장된 값을 대상 메모리에 그대로 복사해준다.
+  - **Parameters** :
+    - dest - 대상 메모리 주소
+    - src - 복사할 원본 데이터가 저장된 메모리 주소
+    - count - 복사할 메모리의 바이트 단위 크기
+  - **Return** : 대상 메모리 주소
+
+
+
+```c
+// ptrmemcpy01.c
+#include <stdio.h>
+// memcpy() 함수를 위한 헤더포함
+#include <string.h>
+
+int main(void){
+    char szBuffer[12] = { "HelloWorld" };
+    char szNewBuffer[12] = { 0 };
+
+    // 원본에서 4 바이트만 대상 메모리로 복사
+    memcpy(szNewBuffer, szBuffer, 4);
+    puts(szNewBuffer);
+
+    // 원본에서 6 바이트만 대상 메모리로 복사
+    memcpy(szNewBuffer, szBuffer, 6);
+    puts(szNewBuffer);
+
+    // 원본 메모리 전체를 대상 메모리로 복사
+    memcpy(szNewBuffer, szBuffer, sizeof(szBuffer));
+    puts(szNewBuffer);
+    return 0;
+}
+/* 출력결과
+Hell
+HelloW
+HelloWorld
+*/
+```
+
+
+
