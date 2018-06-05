@@ -444,3 +444,131 @@ HelloWorld
 
 
 
+### 11.2.3 메모리 비교(`memcmp(), strcmp()`)
+
+#### `memcmp()`
+
+- **`int memcmp(const void *buf1, const void *buf2, size_t count);`**
+  - **Description** : 첫 번째 인자로 전달된 주소의 메모리에 저장된 값에서 두 번째 인자로 전달된 주소에 저장된 메모리의 값을 빼서 두 값이 같은지 비교한다. 즉, 주어진 길이만큼 두 메모리를 비교하는 함수이다.
+  - **Parameters** : 
+    - buf1 - 비교 원본 메모리 주소
+    - buf2 - 비교 대상 메모리 주소
+    - count - 비교할 메모리의 바이트 단위 크기
+  - **Return** :
+    - 0 - 두 값이 같음
+    - $>$ 0 - buf1이 buf2 보다 더 큼
+    - $<$ 0 - buf2가 buf1보다 더 큼
+
+
+
+```c
+// ptrmemcmp01.c
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void){
+
+    char szBuffer[12] = {"TestString"};
+    char *pszData = "TestString";
+
+    // 두 메모리에 저장된 값이 같은 경우
+    printf("%d\n", memcmp(szBuffer, pszData, 10));
+
+    // 왼쪽("teststring")이 더 큰 경우 ASCII 숫자상 t > T이기 때문
+    printf("%d\n", memcmp("teststring", pszData, 10));
+
+    // 오른쪽(pszData)이 더 큰 경우
+    printf("%d\n", memcmp("DataString", pszData, 10));
+
+    return 0;
+}
+/*출력결과
+0
+1
+-1
+*/
+```
+
+
+
+`memcmp()`함수는 아래의 그림처럼 메모리 하나 하나를 1:1로 비교해 메모리를 비교한다.
+
+![](./images/memcmp.png)
+
+
+
+#### `strcmp()`
+
+먼저, `strcmp()`함수를 알아보기 전에 다음 예제를 살펴보자. 
+
+```c
+// ptrstrcmp01.c
+
+#include <stdio.h>
+
+int main(void){
+
+    char szBuffer[12] = { "TestString" };
+    char *pszData = "TestString";
+
+    // 다음 코드들은 두 문자열이 같은지 비교하는 것이 아니라
+    // 문자열이 저장된 메모리의 위치가 같은지 비교하는 것이다.
+    printf("%d\n", szBuffer == pszData);
+    printf("%d\n", "TestString" == pszData);
+    printf("%d\n", "DataString" == "TestString");
+    return 0;
+}
+/* 출력결과
+0
+1
+0
+*/
+```
+
+
+
+위의 코드를 작성한 의도는 두 문자열이 같은지를 비교하기 위해 작성한 것이다. 하지만, 문자열은 배열이므로, 배열의 이름은 **주소** 다. 따라서 위의 `==` 부분은 모두 **주소가 같은 주소인지 비교하는** 것이다. 따라서, 주소를 비교하는 것이 아닌 문자열 내용을 비교하기 위해서는 `strcmp()`함수를 이용하면 된다.
+
+- **`strcmp(const char *string1, const char *string2);`**
+  - **Description** : 대소문자를 식별하여 두 문자열이 같은지 비교하는 함수
+  - **Parameters** : 
+    - string1 - 비교할 문자열이 저장된 메모리 주소
+    - string2 - 비교할 문자열이 저장된 메모리 주소
+  - **Return** : 
+    - 0 - 두 문자열이 같음
+    - $>$ 0 - string1이 sting2보다 알파벳 순서상 나중
+    - $<$ 0 - string2가 나중
+
+
+
+위의 `ptrstrcmp01.c` 코드를 다음과 같이 수정하면 문자열 내용을 비교할 수 있다.
+
+```c
+// ptrstrcmp02.c
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void)
+{
+
+    char szBuffer[12] = {"TestString"};
+    char *pszData = "TestString";
+
+    // 다음 코드들은 두 문자열이 같은지 비교하는 것이 아니라
+    // 문자열이 저장된 메모리의 위치가 같은지 비교하는 것이다.
+    printf("%d\n", strcmp(szBuffer, pszData));
+    printf("%d\n", strcmp("TestString", pszData));
+    printf("%d\n", strcmp("Test", "TestString"));
+    return 0;
+}
+/* 출력결과
+0
+0
+-1
+*/
+```
+
+
+
