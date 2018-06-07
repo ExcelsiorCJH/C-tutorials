@@ -572,3 +572,110 @@ int main(void)
 
 
 
+### 11.2.4 문자열 검색
+
+`strstr()`함수는 두 문자열의 주소를 인자로 받아 검색하여 결과를 반환해 주는 함수이다.
+
+- **`char strstr(const char *string, const char *strCharSet)`**
+  - **Description** : 임의의 대상 문자열에서 특정 문자열을 검색하는 함수
+  - **Parameters** :
+    - string - 검색 대상이 될 문자열이 저장된 메모리 주소
+    - strCharSet - 검색할 문자열이 저장된 메모리 주소
+  - **Return** : 
+    - 문자열을 찾으면 해당 문자열이 저장된 메모리 주소 반환
+    - 찾지 못하면 `NULL` 반환
+
+```c
+// ptrsearch01.c
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void){
+
+    char szBuffer[32] = { "I am a boy." };
+
+    // 배열의 주소를 출력한다.
+    printf("%p\n", szBuffer);
+
+    // 대상 문자열에서 문자열을 검색하고 찾은 위치(주소)를 출력한다.
+    printf("%p\n", strstr(szBuffer, "am"));
+    printf("%p\n", strstr(szBuffer, "boy"));
+
+    // 문자열이 검색된 위치에서 기준이 되는 주소를 빼면
+    // 인덱스를 계산할 수 있다.
+    printf("Index: %d\n", strstr(szBuffer, "am") - szBuffer);
+    printf("Index: %d\n", strstr(szBuffer, "boy") - szBuffer);
+    return 0;
+}
+/* 출력결과 
+0061FF10
+0061FF12
+0061FF17
+Index: 2
+Index: 7
+*/
+```
+
+
+
+위의 코드를 `szBuffer` 배열의 그림으로 나타내면 아래와 같다.
+
+![](./images/strstr.png)
+
+
+
+
+
+### 11.2.5 배열 연산자 풀어쓰기
+
+1차원 배열을 포인터 관점으로 보면, **기준주소에서 일정 인덱스만큼 떨어진 상대주소를 배열 요소의 변수로 지정하는 연산**이라 할 수 있다. 즉 , **`*(기준주소 + 인덱스)`** 와 **`기준주소[인덱스]`**는 같은 의미이다.
+
+```c
+// ptrnarray02.c
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void){
+
+    char szBuffer[32] = { "You are a girl." };
+
+    // 배열의 첫 번째(0번) 요소의 값을 %c 형식으로 출력한다.
+    printf("%c\n", szBuffer[0]);
+    // 0번 요소에 대한 주소인 배열의 이름(주소)에 대해 간접지정 연산을
+    // 수행하고 그 안에 담긴 정보를 출력한다.
+    printf("%c\n", *szBuffer);
+    // 0을 더하더라도 주소는 달라지지 않는다.
+    printf("%c\n", *(szBuffer + 0));
+    
+    // 배열 연산자는 '기준주소 + 인덱스' 연산결과로 얻은 주소를
+    // 간접지정한 것과 같다.
+    printf("%c\n", szBuffer[5]);
+    printf("%c\n", *(szBuffer + 5));
+
+    // 주소연산(&)은 간접지정 연산과 상반된다.szBuffer
+    // 그러므로 아래 세줄의 코드는 모두 같다.
+    printf("%s\n", &szBuffer[4]);
+    printf("%s\n", &*(szBuffer + 4));
+    printf("%s\n", szBuffer + 4);
+    printf("%p\n", szBuffer + 4);
+
+    return 0;
+}
+/* 출력결과
+Y
+Y
+Y
+r
+r
+are a girl.
+are a girl.
+are a girl.
+0061FF14
+*/
+```
+
+
+
+위의 코드에서  `%s`는 배열의 주소에 대응하는 형식문자이다.  `printf()` 함수는 `%s`와 대응된 인자를 메모리의 주소로 판단하고 그 주소에서 `0`이 나올 때 까지 한 글자씩 읽어와 문자열로 출력한다. 즉, **`%s`는 배열의 이름과 대응**된다.
