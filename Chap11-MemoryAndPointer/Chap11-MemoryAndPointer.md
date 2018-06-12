@@ -679,3 +679,149 @@ are a girl.
 
 
 위의 코드에서  `%s`는 배열의 주소에 대응하는 형식문자이다.  `printf()` 함수는 `%s`와 대응된 인자를 메모리의 주소로 판단하고 그 주소에서 `0`이 나올 때 까지 한 글자씩 읽어와 문자열로 출력한다. 즉, **`%s`는 배열의 이름과 대응**된다.
+
+
+
+### 11.2.6 `realloc(), sprintf()` 함수
+
+`realloc()`함수는 **이미 할당된 메모리를 이름처럼 재할당하는 함수**이다. 
+
+- **`void *realloc(void *memblock, size_t size);`**
+  - **Description** : 이미 할당된 메모리 영역에서 크기를 조정할 수 있다면, 반환된 주소는 첫 번째 인자로 전달된 주소와 같다.  불가능할 경우 기존의 메모리를 해제하고 새로운 영역에 다시 할당한 후, 새로 할당된 메모리의 주소를 반환한다.
+  - **Parameters** :
+    - memblock - 기존에 동적 할당된 메모리 주소. 만약 이 주소가 `NULL`이면 `malloc()`함수와 동일하게 동작
+    - size - 다시 할당받을 메모리의 바이트 단위 크기
+  - **Return** : 다시 할당된 메모리 덩어리 중 첫 번째 바이트의 메모리 주소. 실패할 경우 `NULL` 반환 
+
+
+
+`sprintf()`함수는 `printf()` 함수와 비슷하지만, 문자열이 콘솔에 출력되는 것이 아니라 특정 주소의 메모리에 출력된다.  `strcpy()` 함수와 유사한 기능을 한다. 
+
+- **`int sprintf(char *buffer, const char *format [, argument] ...)`**
+  - **Description** : 형식 문자열에 맞춰 특정 메모리에 문자열을 저장하는 함수
+  - **Parameters** : 
+    - buffer - 출력 문자열이 저장될 메모리 주소
+    - format - 형식 문자열이 저장된 메모리 주소
+    - [, argument] - 형식 문자열에 대응하는 가변 인자들
+  - **Return** : 출력된 문자열의 개수
+
+
+
+`strcpy(), sprintf()` 함수는 보안결함이 있어, Windows 에서는 `strcpy_s(), sprintf_s()` 함수를 사용하는 것이 좋으며 `Linux, UNIX` 에서는 `strncpy(), snprintf()`를 사용하는 것이 좋다.
+
+다음 예제는 12 바이트의 메모리를 동적 할당한 후 메모리에 문자열을 출력(`sprintf()`)하고, 더 긴 문자열 출력을 위해 32바이트로 늘려(`realloc()`) 다른 문자열을 출력하는 코드이다.
+
+```c
+// ptrrealloc01.c
+
+#include <stdio.h>
+// _msize() 함수를 위한 헤더 포함
+#include <malloc.h>
+#include <string.h>
+
+int main(void){
+
+    char *pszBuffer = NULL, *pszNewBuffer = NULL;
+
+    // 12바이트 메모리를 동적 할당한 후
+    pszBuffer = (char*)malloc(12);
+    // NULL 문자를 포함해 영문 11자를 저장한다.
+    sprintf(pszBuffer, "%s", "TestString");
+    // 동적할 메모리의 주소, 크기, 저장된 문자열 등을 출력한다.
+    printf("[%p] %d %s\n", pszBuffer, _msize(pszBuffer), pszBuffer);
+
+    // 12바이트의 메모리를 32바이트로 '확장'을 시도한다.
+    pszNewBuffer = (char*)realloc(pszBuffer, 32);
+    if (pszNewBuffer == NULL)
+        free(pszBuffer);
+    
+    // 문자열을 덮어쓰고 주소, 메모리 크기, 저장된 내용을 확인한다.
+    sprintf(pszNewBuffer, "%s", "TestStringData");
+    printf("[%p] %d %s\n", pszNewBuffer, _msize(pszNewBuffer), pszNewBuffer);
+
+    free(pszNewBuffer);
+    return 0;
+}
+/* 출력결과
+[02721C70] 12 TestString
+[02721C70] 32 TestStringData
+*/
+```
+
+
+
+위의 출력결과에서 `malloc()`함수를 이용해 12바이트 메모리를 할당한 메모리 주소와 `realloc()`를 이용해 32바이트로 메모리를 확장한 메모리 주소는 `0x02721C70`으로 같음을 알 수 있다. 
+
+
+
+
+
+## 11.3 포인터의 배열과 다중 포인터
+
+포인터 또한 그 자체도 **변수(메모리)**이다. 변수는 메모리이고 메모리는 관리 목적의 고유번호 즉, 주소가 부여되어 있다. 일반적인 변수의 경우, 이름, 주소, 그 안에 저장된 데이터가 명확하게 구분된다. 하지만 **포인터는 변수 자체의 주소와 변수에 저장된 주소, 이렇게 두 개의 주소가 공존** 한다.
+
+![](./images/var-vs-pointer.png)
+
+
+
+다중 포인터 또한 일반 포인터와 다를 것이 없으며, 가리키는 것이 포인터 변수일 뿐이다. 예를 들어, `int`형 변수에 대한 포인터는 `int*`이며, `int*` 변수에 대한 포인터는 `int**` 이다.
+
+| 포인터 자료형 | 간접지정 연산결과      | 코드 예                                        |
+| ------------- | ---------------------- | ---------------------------------------------- |
+| `char*`       | `*(char*) == char`     | `int nData = 10;`<br />`int *pnData = &nData;` |
+| `char* *`     | `*(char**) == char*`   | `int* *ppnData = &pnData;`                     |
+| `char** *`    | `*(char***) == char**` | `int** *pppnData = &ppnData;`                  |
+
+
+
+### 11.3.1 `char*`의 배열
+
+다중 포인터가 등장하는 이유는 '포인터의 배열' 때문이다. 포인터 배열이란 배열의 요소가 포인터 변수인 경우를 말한다. 예를 들어, `char`형 배열은 문자(배)열 이며 이 문자열은 `0`번 요소의 주소로 식별된다. 따라서, 배열을 식별하는 주소는 **배열(ex. `char[5]`)을 이루고 있는 요소 자료형(`char`)에 대한 포인터(`char*`)**에 담는다.
+
+```c
+#include <stdio.h>
+
+int main(void){
+
+    // char* [3] 배열을 각각의 문자열로 초기화
+    char *astrList[3] = { "Hello", "World", "String" };
+
+    // 배열의 요소가 char* 이므로 %s로 출력하는 것이 맞다.
+    printf("%s\n", astrList[0]);
+    printf("%s\n", astrList[1]);
+    printf("%s\n", astrList[2]);
+
+    // 배열의 0번 요소에는 첫 글자가 저장된 메모리의 주소가 들어있다.
+    // 여기에 정수를 더해 '상대주소'를 계산한다.
+    printf("%s\n", astrList[0] + 1);
+    printf("%s\n", astrList[1] + 2);
+    printf("%s\n", astrList[2] + 3);
+
+    // char*의 배열은 논리적으로 char의 2차원 배열과 같다.
+    printf("%c\n", astrList[0][3]);
+    printf("%c\n", astrList[1][3]);
+    printf("%c\n", astrList[2][3]);
+
+    return 0;
+}
+/* 출력결과 
+Hello
+World
+String
+ello
+rld
+ing
+l
+l
+i
+*/
+```
+
+![](./images/ptrarr.png)
+
+
+
+위의 코드를 그림으로 나타내면 다음과 같다.
+
+![](./images/ptrarr02.png)
+
