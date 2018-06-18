@@ -866,3 +866,131 @@ World
 
 ![](./images/arrayofptr03.png)
 
+
+
+
+
+### 11.4.3 다차원 배열에 대한 포인터
+
+2차원 배열은 **원소가 배열인 배열**이다. 따라서 `char[3][16]` 배열은 `char[16]`가 원소(요소)이고 개수가 3인 배열이며, `char[3][16]` 배열의 식별자인 주소를 담을 수 있는 포인터 변수는 `char[16] *` 이다.  하지만 이렇게 하면 **문법오류** 이다.  문법오류가 나지 않게 하려면 아래의 예제 코드처럼 해주면 된다.
+
+```c
+// ptrtoarray01.c
+#include <stdio.h>
+
+int main(int argc, char* argv[]){
+
+    char astrList[2][12] = {"Hello", "World"};
+
+    // char* *ptrList = astrList;
+    char (*pstrList)[12] = astrList;
+
+    puts(astrList[0]);
+    puts(astrList[1]);
+
+    return 0;
+}
+/* 출력결과
+Hello
+World
+ */
+```
+
+
+
+
+
+## 11.5 변수와 메모리
+
+변수의 본질은 메모리이며, 변수를 선언한다는 것은 함수 내부에 속한 지역변수를 의미하며, 지역변수는 [11.1- 메모리의 종류](http://excelsior-cjh.tistory.com/146?category=999958) 에서 살펴 보았듯이, 메모리 중에서 스택(stack) 영역이다.  스택 주고의 메모리는 관리가 자동으로 이루어지므로, 스택을 사용하는 변수를 자동변수라고 한다.
+
+![](./images/memory_structure.png)
+
+
+
+변수를 선언할 때는 어떤 메모리를 쓸 것인지 명시를 해줘야 하지만, **명시를 하지 않을 경우 지역변수는 컴파일러가 알아서 모두 자동변수로 처리**한다. 변수를 선언할 때 자료형 앞에 기억부류(storage-class)를 명시하는 예약어를 **기억부류 지정자(storage-class specifier)** 라고 한다. 
+
+C언어의 기억부류 지정자는 `extern, auto, static, register` 등이 있다. 
+
+```c
+// variable01.c
+
+#include <stdio.h>
+
+int main(int argc, char* argv[]){
+
+    auto int aList[3] = {10, 20, 30};
+    auto int i = 0;
+
+    for(i=0; i<3; ++i)
+        printf("%d\t", aList[i]);
+    return 0;
+}
+/*  출력결과
+10	20	30
+ */
+```
+
+위의 코드에서 `auto`는 생략해도 된다. 생략하게 되면 컴파일러가 자동으로 스코프 내부의 변수들은 `auto`로 처리한다.
+
+
+
+### 11.5.1 정적변수 `static`
+
+정적변수가 사용하는 데이터 영역 메모리는 프로그램이 시작될 때 확보되어 종료될 때까지 그대로 유지된다. 따라서 함수가 호출되어 스코프가 닫힌다 해도 메모리가 사라지는 것이 아니기 때문에 데이터는 그대로 유지가 되는 것이다.
+
+```c
+// variable02.c
+#include <stdio.h>
+
+int TestFunc(void){
+
+    // 접근성은 TestFunc() 내부로 제한된 지역변수이나
+    // 기억부류는 스택이 아니라 데이터 영역인 '정적'변수 선언 및 정의
+    // 정의는 이 함수가 여러번 호출 되더라도 단 한번만 적용된다.
+    static int nData = 10;
+
+    // nData의 값이 변경됐다.
+    // 정적변수이므로 이 변경된 값은 함수가 반환하더라도 유지된다.
+    ++nData;
+    return nData;
+}
+
+int main(int argc, char* argv[]){
+    // TestFunc() 함수를 호출할 때마다 다른 nData 값을 반환 받는다.
+    printf("%d\n", TestFunc());
+    printf("%d\n", TestFunc());
+    printf("%d\n", TestFunc());
+    return 0;
+}
+/* 출력결과
+11
+12
+13
+ */
+```
+
+ 
+
+위의 코드에서 처럼, 정적변수를 사용하려면 반드시 `static`을 붙여야 한다. 그리고 함수가 반환되도 메모리가 사라지지 않으므로 `nData` 변수는 전역변수처럼 그대로 존재하게 된다. 
+
+
+
+### 11.5.2 레지스터 변수 `register`
+
+레지스터 변수는 CPU의 레지스터를 사용하기 위한 변수이다. 일반 메모리가 아닌 CPU가 가진 메모리 이므로, **별도의 주소가 없다.** 
+
+```c
+// variable03.c
+
+#include <stdio.h>
+
+int main(int argc, char* argv[]){
+    
+    register int i = 0;
+    printf("%d\n", i);
+    printf("%p\n", &i);  // <- 레지스터 변수는 주소가 없으므로 에러가 남
+    return 0;
+}
+```
+
