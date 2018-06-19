@@ -19,3 +19,4 @@
 - [Chap08 - 배열](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap08-Array)
 - [Chap09 - 배열을 활용한 프로그래밍 기법](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap09-Programmig_Using_Array)
 - [Chap10 - 함수에 대한 기본 이론](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap10-Functions_basics)
+- [Chap11 - 메모리와 포인터](https://github.com/ExcelsiorCJH/C-tutorials/tree/master/Chap11-MemoryAndPointer)
