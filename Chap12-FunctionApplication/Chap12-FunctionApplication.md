@@ -85,3 +85,68 @@ int main(int argc, char* argv[]){
 
 
 **포인터의 가장 큰 문제는 가리키는 대상의 실제 크기를 포인터 자체만으로는 알 수가 없다**는 것이다. 따라서, 피호출함수의 매개변수가 포인터인 경우 반드시 대상 메모리의 크기를 함께 매개변수로 받아야 한다. 위에서 `void GetName(char *pszName, int nSize)` 부분을 `void GetName(char pszName[], int nSize)`로 표현해도 의미는 둘다 포인터로 같으며, 두 번째 방법이 "매개변수로 배열의 이름이 전달"된다고 추론할 수 있으므로 가독성이 좋다고 할 수 있다.
+
+다음 예제는 Call-by-reference가 필요한 가장 대표적인 상황을 설명하는 예제로,  두 변수간의 '교환'(swap)을 함수로 구현한 것이다.  아래의 코드에서 `Swap()` 함수는 `int` 에 대한 포인터 변수를 간접지정해서 **대상 메모리에 대해 교환을 수행**한다. 
+
+```c
+// funcswap01.c
+#include <stdio.h>
+
+// 매개변수로 주소를 받는다.
+void Swap(int *pLeft, int *pRight){
+
+    // 주소가 가리키는 대상의 메모리의 값을 교환한다.
+    int nTmp = *pLeft;
+    *pLeft = *pRight;
+    *pRight = nTmp;
+}
+
+int main(void){
+
+    int x = 10, y = 20;
+    printf("x=%d, y=%d\n", x, y);
+    // 호출자 함수에 선언된 지역변수의 주소를 전달한다.
+    // 따라서 함수가 반환한 후 x와 y의 값은 서로 교환된다.
+    Swap(&x, &y);
+    printf("x=%d, y=%d\n", x, y);
+    return 0;
+}
+
+/* 출력결과
+x=10, y=20
+x=20, y=10
+*/
+```
+
+
+
+다음 예제는 **문자열의 길이를 측정하는 기능을 함수로 구현**한 예제이다. 
+
+```c
+// funcstrlen01.c
+#include <stdio.h>
+
+// 매개변수로 전달된 문자열의 길이를 반환하는함수
+int GetLength(const char *pszParam){
+
+    int nLength = 0;
+    while(pszParam[nLength] != '\0')
+        nLength++;
+
+    return nLength;
+}
+
+int main(int argc, char* argv[]){
+
+    char *pszData = "Hello";
+
+    printf("%d\n", GetLength("Hi"));
+    printf("%d\n", GetLength(pszData));
+    return 0;
+}
+/* 출력결과
+2
+5
+*/
+```
+
