@@ -150,3 +150,40 @@ int main(int argc, char* argv[]){
 */
 ```
 
+
+
+
+
+#### 잘못된 주소 전달
+
+Call-by-reference 방식은 함수의 매개변수(포인터)로 주소를 받는 방법이다. 피호출자 함수가 포인터(주소)를 반환하는 경우에는 반환한 주소가 가리키는 대상 메모리는 반드시 유효한 것이어야한다. 따라서, **운영체제에 반환했거나 곧 사라질 메모리에 대한 주소를 반환하는 일은 없어야 한다.** 
+
+```c
+// badfunction01.c
+#include <stdio.h>
+
+int* TestFunc(void){
+
+    int nData = 10;
+    // 함수가 반환하면 소멸할 자동변수의 주소를 반환한다.
+    return &nData;
+}
+
+int main(int argc, char* argv[]){
+
+    int *pnResult = NULL;
+    pnResult = TestFunc();
+
+    // 포인터가 가리키는 대상 메모리는 유효하지 않은 메모리이다.
+    printf("%d\n", *pnResult);
+    return 0;
+}
+
+/* 출력결과
+badfunction01.c:8:12: warning: function returns address of local variable 
+ */
+```
+
+
+
+위의 코드에서의 문제는 **함수 내부에 선언된 자동변수의 주소를 반환하는 것**이다.  `nData`는 `TestFunc()`의 지역변수이므로, 이러한 자동변수는 메모리 중 **스택 영역**을 사용한다. **스택은 스코프가 닫히면 그 내부에 선엉된 것들이 사라진다.**  따라서, 이러한 변수의 주소를 반환하기 때문에 출력결과에서 처럼 `warning` 메시지가 나타나게 된다.
